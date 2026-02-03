@@ -1,13 +1,27 @@
 ```mermaid
 classDiagram
-    %% レイヤー定義
-    class WpfDigitalDistortion <<Window>>
-    class DigitalDistortion_VM <<ViewModel>>
-    class DigitalDistortion_Orchestra <<Orchestrator>>
-    
-    %% 関係性：Presentation
+    %% クラス定義
+    class WpfDigitalDistortion
+    class DigitalDistortion_VM
+    class DigitalDistortion_Orchestra
+    class WaveformDataPorter
+    class AveragedWaveData
+    class OperationResult
+    class IoParamSet
+
+    %% ステレオタイプ付与
+    <<Window>> WpfDigitalDistortion
+    <<ViewModel>> DigitalDistortion_VM
+    <<Orchestrator>> DigitalDistortion_Orchestra
+    <<Interface>> IWaveformImporter
+    <<Interface>> IWaveformExporter
+    <<Data>> AveragedWaveData
+    <<Data>> OperationResult
+
+    %% 関係性：Presentation & Orchestration
     WpfDigitalDistortion ..> DigitalDistortion_VM : DataContext
-    DigitalDistortion_VM --> DigitalDistortion_Orchestra : Commands / Method Calls
+    DigitalDistortion_VM --> DigitalDistortion_Orchestra : Calls methods
+    DigitalDistortion_Orchestra --> OperationResult : Returns
 
     %% 関係性：Orchestraによる強結合 (Composition)
     DigitalDistortion_Orchestra *-- PeriodEstimator
@@ -23,8 +37,8 @@ classDiagram
     WaveformDataPorter o-- IWaveformExporter : DI
     WaveformDataPorter o-- IoController : DI
     
-    IWaveformImporter <|.. WaveformCsvLoader : Implementation
-    IWaveformExporter <|.. WaveformCsvExporter : Implementation
+    IWaveformImporter <|.. WaveformCsvLoader : Implements
+    IWaveformExporter <|.. WaveformCsvExporter : Implements
 
     %% 関係性：IO & Params
     IoController --> IoParamSet : Uses
@@ -33,12 +47,13 @@ classDiagram
 
     %% 関係性：Data Flow
     DigitalDistortion_Orchestra ..> AveragedWaveData : Creates / Holds
-    DigitalDistortion_Orchestra ..> OperationResult : Returns to VM
     
-    %% Utility & Logic
-    WaveformAverager ..> BitOperations : Uses
-    
-    %% Note
-    note for DigitalDistortion_Orchestra "モジュールの司令塔として\n各ロジックのライフサイクルを管理"
-    note for WaveformDataPorter "外部I/Oの窓口\n実装の差し替えが可能"
+    %% Exception (関連クラスとして集約表示)
+    class Exceptions {
+        CsvException
+        IOControlException
+        WaveformAnalysisException
+    }
+    WaveformDataPorter ..> Exceptions : Throws
+    DigitalDistortion_Orchestra ..> Exceptions : Throws
 ```
