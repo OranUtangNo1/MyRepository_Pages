@@ -4,16 +4,16 @@ classDiagram
     WpfDigitalDistortion ..> DigitalDistortion_VM : DataContext
     DigitalDistortion_VM --> DigitalDistortion_Orchestra : Calls
 
-    %% 2. Orchestration (Composition)
+    %% 2. Orchestration (Field Instances)
     DigitalDistortion_Orchestra *-- PeriodEstimator
-    DigitalDistortion_Orchestra *-- ScanDelayCalculator
+    DigitalDistortion_Orchestra *-- WaveformSegmenter
     DigitalDistortion_Orchestra *-- WaveformAverager
     DigitalDistortion_Orchestra *-- WaveformLinearCorrecter
-    DigitalDistortion_Orchestra *-- WaveformSegmenter
-    DigitalDistortion_Orchestra *-- LinearCorrectionValueCalculator
+    DigitalDistortion_Orchestra *-- ScanDelayCalculator
     DigitalDistortion_Orchestra *-- WaveformDataPorter
+    DigitalDistortion_Orchestra *-- IoController
 
-    %% 3. Data Access & DI
+    %% 3. Data Access & DI (WaveformDataPorter's Dependencies)
     WaveformDataPorter o-- IWaveformImporter
     WaveformDataPorter o-- IWaveformExporter
     WaveformDataPorter o-- IoController
@@ -27,6 +27,6 @@ classDiagram
     IoController --> IoParamSet : Uses
     IoParamSet *-- IoParameter : Contains
 
-    %% 5. Utilities
-    WaveformAverager ..> BitOperations : Uses
+    %% 5. Utilities (Corrected)
+    IoController ..> BitOperations : Uses
 ```
