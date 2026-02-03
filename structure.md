@@ -1,4 +1,3 @@
-```mermaid
 classDiagram
     %% レイヤー定義
     class WpfDigitalDistortion <<Window>>
@@ -41,4 +40,3 @@ classDiagram
     %% Note
     note for DigitalDistortion_Orchestra "モジュールの司令塔として\n各ロジックのライフサイクルを管理"
     note for WaveformDataPorter "外部I/Oの窓口\n実装の差し替えが可能"
-```
