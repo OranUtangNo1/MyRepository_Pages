@@ -1,29 +1,10 @@
 ```mermaid
 classDiagram
-    %% クラス定義
-    class WpfDigitalDistortion
-    class DigitalDistortion_VM
-    class DigitalDistortion_Orchestra
-    class WaveformDataPorter
-    class AveragedWaveData
-    class OperationResult
-    class IoParamSet
-
-    %% ステレオタイプ付与
-    <<Window>> WpfDigitalDistortion
-    <<ViewModel>> DigitalDistortion_VM
-    <<Orchestrator>> DigitalDistortion_Orchestra
-    <<Interface>> IWaveformImporter
-    <<Interface>> IWaveformExporter
-    <<Data>> AveragedWaveData
-    <<Data>> OperationResult
-
-    %% 関係性：Presentation & Orchestration
+    %% 1. Presentation
     WpfDigitalDistortion ..> DigitalDistortion_VM : DataContext
-    DigitalDistortion_VM --> DigitalDistortion_Orchestra : Calls methods
-    DigitalDistortion_Orchestra --> OperationResult : Returns
+    DigitalDistortion_VM --> DigitalDistortion_Orchestra : Calls
 
-    %% 関係性：Orchestraによる強結合 (Composition)
+    %% 2. Orchestration (Composition)
     DigitalDistortion_Orchestra *-- PeriodEstimator
     DigitalDistortion_Orchestra *-- ScanDelayCalculator
     DigitalDistortion_Orchestra *-- WaveformAverager
@@ -32,28 +13,20 @@ classDiagram
     DigitalDistortion_Orchestra *-- LinearCorrectionValueCalculator
     DigitalDistortion_Orchestra *-- WaveformDataPorter
 
-    %% 関係性：DI (Dependency Injection)
-    WaveformDataPorter o-- IWaveformImporter : DI
-    WaveformDataPorter o-- IWaveformExporter : DI
-    WaveformDataPorter o-- IoController : DI
+    %% 3. Data Access & DI
+    WaveformDataPorter o-- IWaveformImporter
+    WaveformDataPorter o-- IWaveformExporter
+    WaveformDataPorter o-- IoController
     
-    IWaveformImporter <|.. WaveformCsvLoader : Implements
-    IWaveformExporter <|.. WaveformCsvExporter : Implements
+    IWaveformImporter <|.. WaveformCsvLoader
+    IWaveformExporter <|.. WaveformCsvExporter
 
-    %% 関係性：IO & Params
+    %% 4. Data Objects & Params
+    DigitalDistortion_Orchestra ..> AveragedWaveData : Creates
+    DigitalDistortion_Orchestra ..> OperationResult : Returns
     IoController --> IoParamSet : Uses
     IoParamSet *-- IoParameter : Contains
-    WaveformDataPorter ..> OperationResult : Returns
 
-    %% 関係性：Data Flow
-    DigitalDistortion_Orchestra ..> AveragedWaveData : Creates / Holds
-    
-    %% Exception (関連クラスとして集約表示)
-    class Exceptions {
-        CsvException
-        IOControlException
-        WaveformAnalysisException
-    }
-    WaveformDataPorter ..> Exceptions : Throws
-    DigitalDistortion_Orchestra ..> Exceptions : Throws
+    %% 5. Utilities
+    WaveformAverager ..> BitOperations : Uses
 ```
